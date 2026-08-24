@@ -34,7 +34,7 @@
   <section id="guide" style="position:absolute;top:100%;height:1px" aria-hidden="true"></section>
   <noscript><div class="noscript">请启用 JavaScript 查看交互景观。也可以直接访问 esimka.top 查看中国 eSIM 套餐。</div></noscript>
   <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script>
   (function(){
@@ -43,7 +43,7 @@
     const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setClearColor(0x08151c,0);
     const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x08151c,.026);
     const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,140);camera.position.set(15,10,18);
-    const controls=new THREE.OrbitControls(camera,canvas);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=10;controls.maxDistance=33;controls.target.set(0,2,0);
+    const controls={target:new THREE.Vector3(0,2,0),radius:22,theta:.72,phi:1.12,drag:false,px:0,py:0,update(){this.phi=Math.max(.48,Math.min(1.42,this.phi));camera.position.set(this.target.x+this.radius*Math.sin(this.phi)*Math.sin(this.theta),this.target.y+this.radius*Math.cos(this.phi),this.target.z+this.radius*Math.sin(this.phi)*Math.cos(this.theta));camera.lookAt(this.target)}};canvas.addEventListener("pointerdown",e=>{controls.drag=true;controls.px=e.clientX;controls.py=e.clientY;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener("pointermove",e=>{if(!controls.drag)return;controls.theta-=(e.clientX-controls.px)*.006;controls.phi-=(e.clientY-controls.py)*.004;controls.px=e.clientX;controls.py=e.clientY});canvas.addEventListener("pointerup",e=>{controls.drag=false;canvas.releasePointerCapture(e.pointerId)});canvas.addEventListener("pointercancel",()=>{controls.drag=false});canvas.addEventListener("wheel",e=>{e.preventDefault();controls.radius=Math.max(10,Math.min(33,controls.radius+e.deltaY*.018))},{passive:false});
     scene.add(new THREE.HemisphereLight(0xbde4d1,0x102027,2.1));const key=new THREE.DirectionalLight(0xffd9a0,3.2);key.position.set(-8,16,7);scene.add(key);
     const ground=new THREE.Group();scene.add(ground);
     const terrainGeo=new THREE.PlaneGeometry(42,32,48,38);terrainGeo.rotateX(-Math.PI/2);const pos=terrainGeo.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i);pos.setY(i,Math.sin(x*.36)*.55+Math.cos(z*.31)*.42+Math.sin((x+z)*.18)*.32)}terrainGeo.computeVertexNormals();const terrain=new THREE.Mesh(terrainGeo,new THREE.MeshStandardMaterial({color:0x1b433b,roughness:1,metalness:0.05,flatShading:true}));ground.add(terrain);
